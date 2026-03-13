@@ -3,10 +3,216 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mint for Infinity</title>
+  <title>Mint for Infinity — Cart 07</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #ffd700;
+      letter-spacing: 0.02em;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+      color: #8b949e;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #e6edf3;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus { border-color: #ffd700; }
+
+    button {
+      margin-top: 1.25rem;
+      width: 100%;
+      padding: 0.75rem;
+      background: #ffd700;
+      color: #0d1117;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover { opacity: 0.88; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .result {
+      margin-top: 1.75rem;
+      display: none;
+    }
+
+    .result h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hash-grid {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .hash-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+    }
+
+    .hash-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #ffd700;
+      min-width: 3.5rem;
+    }
+
+    .hash-value {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: #58a6ff;
+      word-break: break-all;
+    }
+
+    .lock-badge {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #1c2a1c;
+      border: 1px solid #3fb950;
+      border-radius: 6px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.82rem;
+      color: #3fb950;
+      font-weight: 600;
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      font-size: 0.78rem;
+      color: #484f58;
+    }
+  </style>
 </head>
 <body>
-  <h1>Mint for Infinity</h1>
-  <p>Cart 07: Token generation and product-plan locking.</p>
+  <header>
+    <h1>🪙 Mint for Infinity</h1>
+    <p>Cart 07 — Token generation &amp; product-plan locking</p>
+  </header>
+
+  <div class="card">
+    <label for="seed">Seed identifier</label>
+    <input type="text" id="seed" value="Iowa_Silver_Recovery" placeholder="Enter a seed string…" />
+    <button id="mintBtn" onclick="mintToken()">Generate 4-Hash Token</button>
+
+    <div class="result" id="result">
+      <h2>[GOLD] Product-Plan-Locked Token</h2>
+      <div class="hash-grid" id="hashGrid"></div>
+      <div class="lock-badge">✔ Product-Plan-Locked</div>
+    </div>
+  </div>
+
+  <footer>Mint for Infinity &copy; 2025 — Cart 07</footer>
+
+  <script type="module">
+    async function sha256hex(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    }
+
+    async function generate4HashToken(seed) {
+      const [hash1, hash2, hash3, hash4] = await Promise.all([
+        sha256hex(`${seed}-1`),
+        sha256hex(`${seed}-2`),
+        sha256hex(`${seed}-3`),
+        sha256hex(`${seed}-4`),
+      ]);
+      return { hash1, hash2, hash3, hash4 };
+    }
+
+    window.mintToken = async function mintToken() {
+      const seed = document.getElementById('seed').value.trim();
+      if (!seed) return;
+
+      const btn = document.getElementById('mintBtn');
+      btn.disabled = true;
+      btn.textContent = 'Generating…';
+
+      const token = await generate4HashToken(seed);
+
+      const grid = document.getElementById('hashGrid');
+      grid.innerHTML = '';
+      for (const [key, val] of Object.entries(token)) {
+        const row = document.createElement('div');
+        row.className = 'hash-row';
+        row.innerHTML = `<span class="hash-label">${key}</span><span class="hash-value">${val}</span>`;
+        grid.appendChild(row);
+      }
+
+      document.getElementById('result').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Generate 4-Hash Token';
+    };
+  </script>
 </body>
 </html>
