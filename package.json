@@ -1,0 +1,25 @@
+{
+  "name": "mint-for-infinity",
+  "version": "1.0.0",
+  "description": "Cart 07: Mint for Infinity — token generation and product-plan locking",
+  "main": "src/cart07.js",
+  "scripts": {
+    "start": "node src/cart07.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/www-infinity/Mint-For-Infinity.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/www-infinity/Mint-For-Infinity/issues"
+  },
+  "homepage": "https://github.com/www-infinity/Mint-For-Infinity#readme",
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}
